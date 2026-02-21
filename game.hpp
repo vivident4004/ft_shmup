@@ -23,16 +23,25 @@ using namespace std;
 
 class Game
 {
-protected:
+public:
     WINDOW *win;
     int curr_width;
     int curr_height;
     vector<Entity> entities;
     int score;
 
-    void updatePlayer(Player &player, vector<Bullet> &bullets);
+    Game() : score(0) {
+        this->win = newwin(W_H, W_W, 0, 0);
+        this->curr_width = W_W;
+        this->curr_height = W_H;
+    };
+    ~Game() { delwin(this->win); };
+    void updatePlayer(Player &player);
     void updateEnemies(int x, int y, vector<Bullet> &bullets);
     void updateBullets(vector<Bullet> &bullets);
+    void drawPlayer(Player &player);
+    void drawBullets(vector<Bullet> &bullets) ;
+    void drawEnemies(vector<Entity> &enemies);
 };
 
 #endif

@@ -1,5 +1,5 @@
 NAME = ft_shmup
-SRC = main.cpp game.cpp
+SRC = main.cpp game.cpp player.cpp 
 
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -g -lncurses -ltinfo

@@ -23,12 +23,12 @@ int main()
 	getmaxyx(stdscr, max_y, max_x);
 	
 	// Crea una finestra
-	WINDOW *game_win = newwin(W_H, W_W, 0, 0);
-	box(game_win, 0, 0); // Disegna bordi
+	// WINDOW *game_win = newwin(W_H, W_W, 0, 0);
+	box(game.win, 0, 0); // Disegna bordi
 	
 	Player player(W_W / 2 - 1, W_H - 3);
-	int ship_x = W_W / 2 - 1;
-	int ship_y = W_H - 3;
+	// int ship_x = W_W / 2 - 1;
+	// int ship_y = W_H - 3;
 	
 	int c = 0;
 	
@@ -44,19 +44,19 @@ int main()
 		
 		// Se il terminale è troppo piccolo, blocca il gioco
 		// TODO: da spostare in una funzione a parte e chiamarla ogni volta che si ridimensiona
-		if (max_x < W_W || max_y < W_H)
-		{
-			game_paused = 1;
-			clear();
-			mvprintw(max_y / 2, (max_x - 40) / 2, "Terminale troppo piccolo!");
-			mvprintw(max_y / 2 + 1, (max_x - 40) / 2, "Richiesto almeno %dx%d", W_W, W_H);
-			mvprintw(max_y / 2 + 2, (max_x - 40) / 2, "Ridimensiona per continuare...");
-			refresh();
-			c = getch();
-			// TODO da cambiare
-			usleep(100000); // Sleep 100ms per non loopare troppo velocemente
-			continue;
-		}
+		// if (max_x < W_W || max_y < W_H)
+		// {
+		// 	game_paused = 1;
+		// 	clear();
+		// 	mvprintw(max_y / 2, (max_x - 40) / 2, "Terminale troppo piccolo!");
+		// 	mvprintw(max_y / 2 + 1, (max_x - 40) / 2, "Richiesto almeno %dx%d", W_W, W_H);
+		// 	mvprintw(max_y / 2 + 2, (max_x - 40) / 2, "Ridimensiona per continuare...");
+		// 	refresh();
+		// 	c = getch();
+		// 	// TODO da cambiare
+		// 	usleep(100000); // Sleep 100ms per non loopare troppo velocemente
+		// 	continue;
+		// }
 		
 		// Se il gioco era in pausa e le dimensioni sono di nuovo giuste, riprendi
 		if (game_paused)
@@ -64,25 +64,24 @@ int main()
 			game_paused = 0;
 			clear();
 			refresh();
-			delwin(game_win);
-			game_win = newwin(W_H, W_W, 0, 0);
+			delwin(game.win);
+			game.win = newwin(W_H, W_W, 0, 0);
 			old_max_x = max_x;
 			old_max_y = max_y;
 		}
 		
-		werase(game_win);
-		box(game_win, 0, 0);
+		werase(game.win);
+		box(game.win, 0, 0);
 		
 		// Leggi input
-		game.updatePlayer(&player);
-
-		mvwaddstr(game_win, ship_y, ship_x, "A");
-		mvwaddstr(game_win, ship_y + 1, ship_x - 1, "/|\\");
+		game.updatePlayer(player);
+		game.drawPlayer(player);
+		game.updateBullets(player.getPlayerBullets());
 		
-		wrefresh(game_win);
+		wrefresh(game.win);
 	} while (c != 27); // ESC
 	
-	delwin(game_win);
+	game.~Game();
 	endwin();
 	return (0);
 }
