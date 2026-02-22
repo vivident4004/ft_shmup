@@ -59,6 +59,7 @@ void Game::update() {
 
 	// updateBullet() è chiamato ogni frame, ma i proiettili si muovono solo quando scade il timer
 	updateBullets();
+	checkCollisions(); // ✔ Controlla le collisioni dopo aver aggiornato i proiettili
 
 	// muove i nemici solo quando scade il timer
 	if (now - lastEnemyMoveClock >= enemyMoveIntervalTicks) {
@@ -149,6 +150,15 @@ void Game::updateEnemies()
     }
 }
 
+void Game::drawHUD() {
+    // ✔ Stampa sulla finestra win, non su stdscr
+    mvwprintw(win, 0, 2, "Score: %d", score);
+    
+    int elapsed = (clock() - gameStartClock) / CLOCKS_PER_SEC;
+    mvwprintw(win, 0, win_width - 15, "Time: %d", elapsed);
+
+}
+
 void Game::render() {
 	// Legge dimensione del terminale ad ogni render
 	int term_h, term_w;
@@ -194,10 +204,11 @@ void Game::render() {
 	werase(win);
 	box(win, 0, 0);
 
+	drawHUD();        // ✔ Aggiungi prima degli altri draw
 	drawPlayer();
 	drawBullets();
 	drawEnemies();
-
+	
 	wrefresh(win);
 }
 
@@ -224,5 +235,49 @@ void Game::drawEnemies() {
 }
 
 void Game::checkCollisions() {
-	
+    for (size_t i = 0; i < p_bullets.size(); )
+    {
+        bool hit = false;
+        for (size_t j = 0; j < enemies.size(); j++)
+        {
+            // ✔ Controlla i 3 blocchi del nemico
+            int ex = enemies[j].getX();
+            int ey = enemies[j].getY();
+            int bx = p_bullets[i].getX();
+            int by = p_bullets[i].getY();
+            
+            // Nemico occupa: (ex-1, ey), (ex, ey), (ex+1, ey)
+            if (by == ey && (bx == ex - 1 || bx == ex || bx == ex + 1))
+            {
+                enemies.erase(enemies.begin() + j);
+                hit = true;
+                score += 10;
+                break;
+            }
+        }
+        if (hit)
+            p_bullets.erase(p_bullets.begin() + i);
+        else
+            i++;
+    }
+
+	for (size_t i = 0; i < e_bullets.size(); )
+	{
+		int bx = e_bullets[i].getX();
+		int by = e_bullets[i].getY();
+		int px = player->getX();
+		int py = player->getY();
+		
+		// Il giocatore occupa: (px, py) e (px, py+1)
+		if ((by == py && bx == px) || (by == py + 1 && bx >= px - 1 && bx <= px + 1))
+		{
+			// Il giocatore è colpito
+			player->loseLife();
+			e_bullets.erase(e_bullets.begin() + i);
+		}
+		else
+		{
+			i++;
+		}
+	}
 }

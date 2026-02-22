@@ -11,13 +11,13 @@ private:
     Game *game;
 
 public:
-    Player(int x, int y, Game *game, int health = 100) : Entity(x, y, health), game(game) {}
+    Player(int x, int y, Game *game, int health) : Entity(x, y, health), game(game) {}
     ~Player() {}
     
     // Metodo obbligatorio da implementare
     void shoot() override;
     void loseLife(int damage = 10);
-    void die() {}
+    void die();
 };
 
 #endif

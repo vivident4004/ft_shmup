@@ -10,3 +10,20 @@ void Player::shoot()
 		game->addBullet(bullet, PLAYER);
 	}
 }
+
+void Player::loseLife(int damage)
+{
+	health -= damage;
+	if (health <= 0) {
+		die();
+	}
+}
+
+void Player::die()
+{
+	// Per ora, semplicemente resetta la salute e la posizione del giocatore.
+	health = 100;
+	x = game->win_width / 2;
+	y = game->win_height - 3;
+	// Potresti anche voler resettare il punteggio o altri stati di gioco qui.
+}
