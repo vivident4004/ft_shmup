@@ -66,11 +66,9 @@ void Game::handleInput(int c)
 		if (c == 'r' || c == 'R')
 		{
 			player->revive();
-			score = 0;
 			frameCount = 0;
 			lastSpawnFrame = 0;
 			lastEnemyMoveFrame = 0;
-			elapsedTime = 0.0;
 			fpsAccumulator = 0.0;
 			fpsFrameCount = 0;
 			enemies.clear();
