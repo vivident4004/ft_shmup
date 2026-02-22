@@ -117,7 +117,7 @@ void Game::update()
 	if (frameCount - lastSpawnFrame >= SPAWN_INTERVAL_FRAMES)
 	{
 		spawnEnemy();
-		addAsteroid(Asteroid(RandomBetweenInt(1, win_width - 2), 1, 5, false));
+		addAsteroid(Asteroid(RandomBetweenInt(1, win_width - 2), 1, 1, false));
 		lastSpawnFrame = frameCount;
 	}
 
