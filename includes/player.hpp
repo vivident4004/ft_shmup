@@ -25,6 +25,7 @@ public:
 	bool getIsDead() const { return isDead; }
 	int getMaxHealth() const { return maxHealth; }
     int getLives() const { return lives; }
+	bool getIsBoss() const { return false; }
 };
 
 #endif

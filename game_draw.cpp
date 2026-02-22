@@ -239,6 +239,7 @@ void Game::render()
 		drawPlayer();
 		drawBullets();
 		drawEnemies();
+		drawBoss();
 		drawAsteroids();
 		drawHealthBar();
 	}
@@ -294,6 +295,28 @@ void Game::drawEnemies()
 		mvwaddch(win, e.getY(), e.getX(), 'O');
 		mvwaddch(win, e.getY(), e.getX() + 1, ')');
 		wattroff(win, COLOR_PAIR(color));
+	}
+}
+
+void Game::drawBoss()
+{
+	for (const auto &e : enemies)
+	{
+		if (e.getIsBoss())
+		{
+			int color;
+			if (e.getHealth() <= 1)
+				color = COLOR_ENEMY_DEAD;
+			else if (e.getHealth() <= 3)
+				color = COLOR_ENEMY_DAMAGED;
+			else
+				color = COLOR_ENEMY_FULL;
+			wattron(win, COLOR_PAIR(color) | A_BOLD);
+			mvwaddch(win, e.getY(), e.getX() - 1, '(');
+			mvwaddch(win, e.getY(), e.getX(), 'B');
+			mvwaddch(win, e.getY(), e.getX() + 1, ')');
+			wattroff(win, COLOR_PAIR(color) | A_BOLD);
+		}
 	}
 }
 
