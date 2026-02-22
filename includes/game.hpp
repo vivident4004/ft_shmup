@@ -39,6 +39,7 @@ public:
 	clock_t spawnIntervalTicks;
 	clock_t lastEnemyMoveClock;
 	clock_t enemyMoveIntervalTicks;
+	clock_t gameStartClock;
 
 	Game();
 	~Game();
@@ -58,7 +59,11 @@ public:
 	void drawPlayer();
 	void drawBullets();
 	void drawEnemies();
+<<<<<<< HEAD
 	void drawAsteroids();
+=======
+	void drawHUD();
+>>>>>>> refs/remotes/origin/master
 	void checkCollisions();
 };
 
