@@ -3,7 +3,7 @@
 #include "includes/game.hpp"
 
 Player::Player(int x, int y, Game *game, int health) 
-	: Entity(x, y, health), game(game), maxHealth(health), isDead(false) {}
+	: Entity(x, y, health, false), game(game), maxHealth(health), isDead(false), lives(3) {}
 
 void Player::shoot()
 {

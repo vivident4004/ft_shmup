@@ -43,14 +43,13 @@
 class Game
 {
 private:
-	// Entita'
 	Player *player;
 	std::vector<Bullet> p_bullets;
 	std::vector<Bullet> e_bullets;
 	std::vector<Enemy> enemies;
 	std::vector<Asteroid> asteroids;
 
-	// Sfondo - stelle
+	// Sfondo a stelle
 	struct Star {
 		int x, y;
 		char ch;
@@ -111,6 +110,7 @@ public:
 	void addBullet(const Bullet& bullet, int entity);
 	void addAsteroid(const Asteroid& asteroid);
 	void spawnEnemy();
+	void spawnBoss();
 };
 
 #endif

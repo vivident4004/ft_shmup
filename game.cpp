@@ -50,7 +50,13 @@ void Game::addAsteroid(const Asteroid &asteroid)
 void Game::spawnEnemy()
 {
 	int x = RandomBetweenInt(1, win_width - 2);
-	enemies.emplace_back(x, 1, this, 5);
+	enemies.emplace_back(x, 1, this, 5, false);
+}
+
+void Game::spawnBoss()
+{
+	int x = RandomBetweenInt(1, win_width - 2);
+	enemies.emplace_back(x, 1, this, 20, true); // Boss con più salute
 }
 
 void Game::handleInput(int c)
@@ -113,7 +119,7 @@ void Game::update()
 	if (frameCount - lastSpawnFrame >= SPAWN_INTERVAL_FRAMES)
 	{
 		spawnEnemy();
-		addAsteroid(Asteroid(RandomBetweenInt(1, win_width - 2), 1));
+		addAsteroid(Asteroid(RandomBetweenInt(1, win_width - 2), 1, 5, false));
 		lastSpawnFrame = frameCount;
 	}
 

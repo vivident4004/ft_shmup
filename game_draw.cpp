@@ -42,7 +42,7 @@ void Game::drawBackground()
 void Game::drawLives()
 {
 	wattron(win, COLOR_PAIR(COLOR_HUD) | A_BOLD);
-	mvwprintw(win, 0, win_width - 20, "Lives: %d", player->);
+	mvwprintw(win, 0, win_width - 20, "Lives: %d", player->getHealth());
 	wattroff(win, COLOR_PAIR(COLOR_HUD) | A_BOLD);
 }
 
