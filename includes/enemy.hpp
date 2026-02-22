@@ -12,6 +12,7 @@ private:
 	Game *game;
 	std::chrono::steady_clock::time_point lastShootTime;
 	double shootInterval; // in secondi
+	// bool isBoss;
 
 public:
 	Enemy(int x, int y, Game *game, int health);

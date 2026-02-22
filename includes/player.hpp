@@ -11,6 +11,7 @@ private:
 	Game *game;
 	int maxHealth;
 	bool isDead;
+    int lives;
 
 public:
 	Player(int x, int y, Game *game, int health);

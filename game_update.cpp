@@ -44,6 +44,22 @@ void Game::updateBullets()
 	}
 }
 
+void Game::updateAsteroids()
+{
+	for (size_t i = 0; i < asteroids.size();)
+	{
+		Asteroid &a = asteroids[i];
+		a.setY(a.getY() + 1);
+		if (a.getY() >= win_height - 1)
+		{
+			asteroids.erase(asteroids.begin() + i);
+		}
+		else
+		{
+			i++;
+		}
+	}
+}
 void Game::updateEnemies()
 {
 	for (size_t i = 0; i < enemies.size();)
@@ -73,22 +89,6 @@ void Game::updateEnemies()
 	}
 }
 
-void Game::updateAsteroids()
-{
-	for (size_t i = 0; i < asteroids.size();)
-	{
-		Asteroid &a = asteroids[i];
-		a.setY(a.getY() + 1);
-		if (a.getY() >= win_height - 1)
-		{
-			asteroids.erase(asteroids.begin() + i);
-		}
-		else
-		{
-			i++;
-		}
-	}
-}
 
 void Game::checkCollisions()
 {

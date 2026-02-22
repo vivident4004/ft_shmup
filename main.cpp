@@ -15,12 +15,21 @@ static void start_ncurses(void)
 	if (has_colors()) {
 		start_color();
 		use_default_colors();
+		if (can_change_color()) {
+			init_color(COLOR_BROWN, 600, 400, 200);
+			init_color(COLOR_ENEMY_FULL, 964, 188, 286);
+			init_color(COLOR_ENEMY_DAMAGED, 816, 153, 326);
+			init_color(COLOR_ENEMY_DEAD, 538, 141, 294);
+		}
+
 		init_pair(COLOR_PLAYER, COLOR_CYAN, -1);
-		init_pair(COLOR_PLAYER_BULLET, COLOR_YELLOW, -1);
-		init_pair(COLOR_ENEMY, COLOR_RED, -1);
-		init_pair(COLOR_ENEMY_BULLET, COLOR_MAGENTA, -1);
-		init_pair(COLOR_ASTEROID, COLOR_WHITE, -1);
-		init_pair(COLOR_HUD, COLOR_GREEN, -1);
+		init_pair(COLOR_PLAYER_BULLET, COLOR_GREEN, -1);
+		init_pair(COLOR_ENEMY_FULL, COLOR_ENEMY_FULL, -1);
+		init_pair(COLOR_ENEMY_DAMAGED, COLOR_ENEMY_DAMAGED, -1);
+		init_pair(COLOR_ENEMY_DEAD, COLOR_ENEMY_DEAD, -1);
+		init_pair(COLOR_ENEMY_BULLET, COLOR_RED, -1);
+		init_pair(COLOR_ASTEROID, COLOR_BROWN, -1);
+		init_pair(COLOR_HUD, COLOR_WHITE, -1);
 		init_pair(COLOR_HP_FULL, COLOR_GREEN, -1);
 		init_pair(COLOR_HP_LOW, COLOR_RED, -1);
 		init_pair(COLOR_STAR_DIM, COLOR_BLUE, -1);
@@ -44,7 +53,7 @@ int main()
 	const double frameDurationSec = 1.0 / FPS; // ~0.01667s per 60 FPS
 	auto lastTime = Clock::now();
 
-	while (c != 27)
+	while (c != 'q' && c != 'Q')
 	{
 		// Delta time: tempo reale trascorso dall'ultimo frame
 		auto now = Clock::now();
@@ -64,10 +73,8 @@ int main()
 		}
 
 		// Input
-		while ((c = getch()) != ERR && c != 27)
+		while ((c = getch()) != ERR && c != 'q' && c != 'Q')
 			game.handleInput(c);
-		if (c == 27)
-			break;
 
 		// Pausa: aspetta che il giocatore riprenda
 		if (game.paused) {
@@ -78,11 +85,11 @@ int main()
 					game.render();
 				if (c == 'p')
 					game.paused = false;
-				if (c == 27)
+				if (c == 'q' || c == 'Q')
 					break;
 			}
 			nodelay(stdscr, TRUE);
-			if (c == 27)
+			if (c == 'q' || c == 'Q')
 				break;
 			lastTime = Clock::now(); // Reset delta dopo pausa
 			continue;

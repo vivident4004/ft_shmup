@@ -24,7 +24,7 @@
 // Color pairs
 #define COLOR_PLAYER 1
 #define COLOR_PLAYER_BULLET 2
-#define COLOR_ENEMY 3
+#define COLOR_ENEMY_FULL 3
 #define COLOR_ENEMY_BULLET 4
 #define COLOR_ASTEROID 5
 #define COLOR_HUD 6
@@ -34,6 +34,9 @@
 #define COLOR_STAR_BRIGHT 10
 #define COLOR_EXPLOSION 11
 #define COLOR_GAMEOVER 12
+#define COLOR_ENEMY_DAMAGED 13
+#define COLOR_ENEMY_DEAD 14
+#define COLOR_BROWN 15
 
 #define MAX_STARS 40
 
@@ -80,6 +83,7 @@ private:
 	void drawAsteroids();
 	void drawHUD();
 	void drawHealthBar();
+	void drawLives();
 	void drawExplosion();
 	void drawBackground();
 	void updateBackground();

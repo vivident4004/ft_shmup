@@ -7,7 +7,9 @@ void Game::updateBackground()
 	for (auto &s : stars)
 	{
 		// Le stelle dim si muovono lentamente, le bright più veloci
-		if (s.color == COLOR_STAR_BRIGHT || frameCount % 2 == 0)
+		if (s.color == COLOR_STAR_BRIGHT && frameCount % 5 == 0)
+			s.y++;
+		else if (s.color == COLOR_STAR_DIM && frameCount % 10 == 0)
 			s.y++;
 
 		if (s.y >= win_height - 1)
@@ -37,6 +39,13 @@ void Game::drawBackground()
 	}
 }
 
+void Game::drawLives()
+{
+	wattron(win, COLOR_PAIR(COLOR_HUD) | A_BOLD);
+	mvwprintw(win, 0, win_width - 20, "Lives: %d", player->);
+	wattroff(win, COLOR_PAIR(COLOR_HUD) | A_BOLD);
+}
+
 void Game::drawHealthBar()
 {
 	int barWidth = 30;
@@ -60,6 +69,7 @@ void Game::drawHealthBar()
 	mvwaddstr(win, WIN_HEIGHT - 1, 5 + barWidth, "]");
 	mvwprintw(win, WIN_HEIGHT - 1, 5 + barWidth + 3, "%d/%d", playerHealth, maxPlayerHealth);
 	wattroff(win, COLOR_PAIR(COLOR_HUD));
+
 }
 
 void Game::drawHUD()
@@ -75,6 +85,7 @@ void Game::drawHUD()
 	wattroff(win, COLOR_PAIR(COLOR_HUD) | A_BOLD);
 
 	drawHealthBar();
+	drawLives();
 }
 
 void Game::drawExplosion()
@@ -216,14 +227,21 @@ void Game::drawBullets()
 
 void Game::drawEnemies()
 {
-	wattron(win, COLOR_PAIR(COLOR_ENEMY) | A_BOLD);
 	for (const auto &e : enemies)
 	{
+		int color;
+		if (e.getHealth() <= 1)
+			color = COLOR_ENEMY_DEAD;
+		else if (e.getHealth() <= 3)
+			color = COLOR_ENEMY_DAMAGED;
+		else
+			color = COLOR_ENEMY_FULL;
+		wattron(win, COLOR_PAIR(color));
 		mvwaddch(win, e.getY(), e.getX() - 1, '(');
 		mvwaddch(win, e.getY(), e.getX(), 'O');
 		mvwaddch(win, e.getY(), e.getX() + 1, ')');
+		wattroff(win, COLOR_PAIR(color));
 	}
-	wattroff(win, COLOR_PAIR(COLOR_ENEMY) | A_BOLD);
 }
 
 void Game::drawAsteroids()

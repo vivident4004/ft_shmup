@@ -30,8 +30,21 @@ void Player::die()
 
 void Player::revive()
 {
-	isDead = false;
-	health = maxHealth;
-	x = 40;   // Centro
-	y = 20;   // Basso
+	if (lives > 0)
+	{
+		isDead = false;
+		health = maxHealth;
+		x = WIN_WIDTH / 2;   // Centro
+		y = WIN_HEIGHT - 3;   // Basso
+		lives--;
+	}
+	else
+	{
+		// Game over, reset completo
+		isDead = false;
+		health = maxHealth;
+		x = WIN_WIDTH / 2;   // Centro
+		y = WIN_HEIGHT - 3;   // Basso
+		lives = 3; // Reset delle vite
+	}
 }
