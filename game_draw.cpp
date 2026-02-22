@@ -1,5 +1,7 @@
 #include "includes/game.hpp"
 #include "includes/utilities.hpp"
+#include <cstring>
+#include <cstdio>
 
 void Game::updateBackground()
 {
@@ -41,9 +43,29 @@ void Game::drawBackground()
 
 void Game::drawLives()
 {
-	wattron(win, COLOR_PAIR(COLOR_HUD) | A_BOLD);
-	mvwprintw(win, 0, win_width - 20, "Lives: %d", player->);
-	wattroff(win, COLOR_PAIR(COLOR_HUD) | A_BOLD);
+	int maxLives = 3;
+	int currentLives = player->getLives();
+	int startX = 5 + 30 + 3 + 8;
+
+	wattron(win, COLOR_PAIR(COLOR_HUD));
+	mvwaddstr(win, WIN_HEIGHT - 1, startX, "|");
+	wattroff(win, COLOR_PAIR(COLOR_HUD));
+
+	for (int i = 0; i < maxLives; i++)
+	{
+		if (i < currentLives)
+		{
+			wattron(win, COLOR_PAIR(COLOR_HP_FULL) | A_BOLD);
+			mvwaddch(win, WIN_HEIGHT - 1, startX + 3 + i * 2, '*');
+			wattroff(win, COLOR_PAIR(COLOR_HP_FULL) | A_BOLD);
+		}
+		else
+		{
+			wattron(win, COLOR_PAIR(COLOR_HP_LOW) | A_BOLD);
+			mvwaddch(win, WIN_HEIGHT - 1, startX + 3 + i * 2, 'X');
+			wattroff(win, COLOR_PAIR(COLOR_HP_LOW) | A_BOLD);
+		}
+	}
 }
 
 void Game::drawHealthBar()
@@ -114,7 +136,18 @@ void Game::drawExplosion()
 	wattroff(win, COLOR_PAIR(COLOR_EXPLOSION) | A_BOLD);
 }
 
-void Game::render()
+void Game::drawPause()
+{
+	const char *p = "PAUSED";
+	const char *r = "Press P to resume";
+
+	wattron(win, COLOR_PAIR(COLOR_HUD) | A_BOLD);
+	mvwaddstr(win, win_height / 2, (win_width - (int)strlen(p)) / 2, p);
+	mvwaddstr(win, win_height / 2 + 1, (win_width - (int)strlen(r)) / 2, r);
+	wattroff(win, COLOR_PAIR(COLOR_HUD) | A_BOLD);
+}
+
+bool Game::initWindow()
 {
 	// Legge dimensione del terminale ad ogni render
 	int term_h, term_w;
@@ -137,7 +170,7 @@ void Game::render()
 		mvprintw(term_h / 2 + 1, col, "Richiesto almeno %dx%d", WIN_WIDTH, WIN_HEIGHT);
 		mvprintw(term_h / 2 + 2, col, "Ridimensiona per continuare...");
 		refresh();
-		return;
+		return false;
 	}
 
 	// Limita la dimensione di gioco al massimo definito in includes/game.hpp
@@ -163,6 +196,33 @@ void Game::render()
 		}
 	}
 	paused = false;
+	return true;
+}
+
+void Game::drawGameOver()
+{
+	drawExplosion();
+
+	const char *go = "GAME OVER";
+	char scoreBuf[32];
+	snprintf(scoreBuf, sizeof(scoreBuf), "Final score: %d", score);
+	const char *restart = "Press R to restart";
+
+	wattron(win, COLOR_PAIR(COLOR_GAMEOVER) | A_BOLD);
+	mvwaddstr(win, win_height / 2 - 2, (win_width - (int)strlen(go)) / 2, go);
+	wattroff(win, COLOR_PAIR(COLOR_GAMEOVER) | A_BOLD);
+
+	wattron(win, COLOR_PAIR(COLOR_HUD));
+	mvwaddstr(win, win_height / 2, (win_width - (int)strlen(scoreBuf)) / 2, scoreBuf);
+	mvwaddstr(win, win_height / 2 + 2, (win_width - (int)strlen(restart)) / 2, restart);
+	wattroff(win, COLOR_PAIR(COLOR_HUD));
+}
+
+void Game::render()
+{
+	if (!initWindow())
+		return;
+
 	werase(win);
 
 	// Bordo colorato
@@ -172,7 +232,6 @@ void Game::render()
 
 	// Sfondo stellare
 	drawBackground();
-
 	drawHUD();
 
 	if (!player->getIsDead())
@@ -185,17 +244,11 @@ void Game::render()
 	}
 	else
 	{
-		drawExplosion();
-
-		wattron(win, COLOR_PAIR(COLOR_GAMEOVER) | A_BOLD);
-		mvwaddstr(win, win_height / 2 - 2, (win_width - 10) / 2, "GAME OVER");
-		wattroff(win, COLOR_PAIR(COLOR_GAMEOVER) | A_BOLD);
-
-		wattron(win, COLOR_PAIR(COLOR_HUD));
-		mvwprintw(win, win_height / 2, (win_width - 10) / 2, "Final score: %d", score);
-		mvwaddstr(win, win_height / 2 + 2, (win_width - 10) / 2, "Press R to restart");
-		wattroff(win, COLOR_PAIR(COLOR_HUD));
+		drawGameOver();
 	}
+
+	if (paused)
+		drawPause();
 
 	wrefresh(win);
 }

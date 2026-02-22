@@ -9,7 +9,7 @@ protected:
 	int health;
 
 public:
-	Entity(int x = 0, int y = 0, int health = 100) : x(x), y(y), health(health) {}
+	Entity(int x, int y, int health) : x(x), y(y), health(health) {}
 	virtual ~Entity() {}
 
 	virtual void shoot() = 0;

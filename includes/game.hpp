@@ -84,9 +84,12 @@ private:
 	void drawHUD();
 	void drawHealthBar();
 	void drawLives();
+	void drawPause();
 	void drawExplosion();
 	void drawBackground();
+	void drawGameOver();
 	void updateBackground();
+	bool initWindow();
 
 public:
 	WINDOW *win;
