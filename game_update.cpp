@@ -128,15 +128,14 @@ void Game::checkCollisions()
 			// Nemico occupa: (ex-1, ey), (ex, ey), (ex+1, ey)
 			else if (by == ey && (bx == ex - 1 || bx == ex || bx == ex + 1))
 			{
-				if (enemies[j].getHealth() > 1)
-					enemies[j].setHealth(enemies[j].getHealth() - 1);
-				else
+				enemies[j].setHealth(enemies[j].getHealth() - p_bullets[i].damage);
+				if (enemies[j].getHealth() <= 0)
 				{
 					enemies.erase(enemies.begin() + j);
-					hit = true;
 					score += 10;
-					break;
 				}
+				hit = true;
+				break;
 			}
 		}
 		if (hit)
@@ -157,9 +156,13 @@ void Game::checkCollisions()
 
 			if (by == ay && bx == ax)
 			{
-				asteroids.erase(asteroids.begin() + j);
+				asteroids[j].setHealth(asteroids[j].getHealth() - p_bullets[i].damage);
+				if (asteroids[j].getHealth() <= 0)
+				{
+					asteroids.erase(asteroids.begin() + j);
+					score += 5;
+				}
 				hit = true;
-				score += 5;
 				break;
 			}
 		}

@@ -1,1 +1,0 @@
-check_collisions(); // tutta la logica
