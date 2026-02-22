@@ -1,8 +1,9 @@
 NAME = ft_shmup
-SRC = main.cpp game.cpp player.cpp 
+SRC = main.cpp game.cpp player.cpp enemy.cpp utilities.cpp
 
 CXX = c++
-CXXFLAGS = -Wall -Wextra -Werror -g -lncurses -ltinfo
+CXXFLAGS = -Wall -Wextra -Werror -g
+LDFLAGS = -lncurses -ltinfo
 
 #Colori ANSI
 RED = \033[31m
@@ -14,7 +15,7 @@ RESET = \033[0m
 all: $(NAME)
 
 $(NAME): $(SRC)
-	@$(CXX) $(CXXFLAGS) $(SRC) -o $(NAME)
+	@$(CXX) $(CXXFLAGS) $(SRC) $(LDFLAGS) -o $(NAME)
 	@echo "$(GREEN)✔ Eseguibile $(YELLOW)$(NAME)$(RESET) $(GREEN)generato$(RESET)"
 
 clean:

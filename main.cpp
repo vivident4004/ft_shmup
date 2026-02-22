@@ -31,7 +31,15 @@ int main()
 			game.update();
 			game.render();
 		}
-		
+		while (game.paused) {
+			c = getch(); // Continua a leggere input per uscire dalla pausa
+			if (c == KEY_RESIZE) {
+				game.render(); // Riprova a renderizzare se il terminale è stato ridimensionato
+			}
+			if (c == 'p') {
+				game.paused = false; // Esci dalla pausa
+			}
+		}
 		// usleep(10000);
 		frameCount++;
 	}
