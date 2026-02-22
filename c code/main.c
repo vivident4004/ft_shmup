@@ -65,7 +65,7 @@ int main(int ac, char **av)
 			refresh();
 			c = getch();
 			// TODO da cambiare
-			usleep(100000); // Sleep 100ms per non loopare troppo velocemente
+			// usleep(100000); // Sleep 100ms per non loopare troppo velocemente
 			continue;
 		}
 		

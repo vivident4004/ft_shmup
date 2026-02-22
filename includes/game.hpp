@@ -9,15 +9,21 @@
 #include "enemy.hpp"
 #include "asteroid.hpp"
 #include <ctime>
+#include <chrono>
 
 // Dimensioni della finestra di gioco
-#define WIN_WIDTH 80
-#define WIN_HEIGHT 24
+#define WIN_WIDTH 60
+#define WIN_HEIGHT 50
+#define FPS 60
+
+// Frame-based timing (a 60 FPS: 60 frame = 1 secondo)
+#define SPAWN_INTERVAL_FRAMES 120   // Spawn ogni 2 secondi
+#define ENEMY_MOVE_INTERVAL_FRAMES 30 // Nemici si muovono ~20 volte/s
 
 #define PLAYER 0
-#define PLAYER_SHOOT_SPEED 4
+// #define PLAYER_SHOOT_SPEED 4
 #define ENEMY 1
-#define ENEMY_SHOOT_SPEED 4
+// #define ENEMY_SHOOT_SPEED 20
 
 class Game
 {
@@ -33,13 +39,22 @@ public:
 	std::vector<Enemy> enemies;
 	std::vector<Asteroid> asteroids;
 
-	int score;
+	// Stato dei tasti (permette input "simultanei")
+	bool keyLeft;
+	bool keyRight;
+	bool keyUp;
+	bool keyDown;
+	bool keyShooting;
 
-	clock_t lastSpawnClock;
-	clock_t spawnIntervalTicks;
-	clock_t lastEnemyMoveClock;
-	clock_t enemyMoveIntervalTicks;
-	clock_t gameStartClock;
+	int score;
+	double currentFPS;
+	double elapsedTime;     // Clock-based: tempo di gioco in secondi
+	double fpsAccumulator;  // Clock-based: accumula delta per calcolo FPS
+	int fpsFrameCount;      // Clock-based: frame contati nell'ultimo secondo
+
+	unsigned long long frameCount;
+	unsigned long long lastSpawnFrame;
+	unsigned long long lastEnemyMoveFrame;
 
 	Game();
 	~Game();
@@ -63,6 +78,7 @@ public:
 	void drawHUD();
 	void checkCollisions();
 	void drawHealthBar();
+	void drawExplosion();
 };
 
 #endif

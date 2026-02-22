@@ -2,7 +2,7 @@
 #define ENEMY_HPP
 
 #include "entity.hpp"
-#include <ctime>
+#include <chrono>
 
 class Game; // Forward declaration
 
@@ -10,10 +10,11 @@ class Enemy : public Entity
 {
 private:
 	Game *game;
-	clock_t lastShootClock;
-	int shootInterval;
+	std::chrono::steady_clock::time_point lastShootTime;
+	double shootInterval; // in secondi
+
 public:
-	Enemy(int x, int y, Game *game, int health = 10);
+	Enemy(int x, int y, Game *game, int health);
 	~Enemy() {}
 
 	void shoot() override;

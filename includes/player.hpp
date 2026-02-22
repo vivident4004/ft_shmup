@@ -3,23 +3,27 @@
 
 #include "entity.hpp"
 
-class Game; // forward declaration
+class Game;
 
 class Player : public Entity
 {
 private:
     Game *game;
+    int maxHealth;
+    bool isDead;
 
 public:
     Player(int x, int y, Game *game, int health);
     ~Player() {}
     
-    // Metodo obbligatorio da implementare
-    int getHealth() const override { return health; }
-    void setHealth(int newHealth) override { health = newHealth; }
     void shoot() override;
     void loseLife(int damage);
     void die();
+    void revive();
+    
+    bool getIsDead() const { return isDead; }
+    int getHealth() const override { return health; }
+    int getMaxHealth() const { return maxHealth; }
 };
 
 #endif
