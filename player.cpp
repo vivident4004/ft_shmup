@@ -24,10 +24,10 @@ void Player::loseLife(int damage)
 
 void Player::die()
 {
+	lives--;
 	if (lives > 0)
 	{
 		// Ha ancora vite: respawn immediato
-		lives--;
 		health = maxHealth;
 		x = WIN_WIDTH / 2;
 		y = WIN_HEIGHT - 3;

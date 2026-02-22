@@ -5,11 +5,12 @@ Game::Game() : player(nullptr),
 				bossWaveTriggered(false), spawnedEnemies(0),
 				keyLeft(false), keyRight(false), keyUp(false),
 				keyDown(false), keyShooting(false),
+				bgFrameCount(0),
 				frameCount(0), lastSpawnFrame(0), lastEnemyMoveFrame(0),
-				win(nullptr), win_width(WIN_WIDTH), win_height(WIN_HEIGHT),
-				paused(false), score(0),
 				currentFPS(0.0), elapsedTime(0.0),
-				fpsAccumulator(0.0), fpsFrameCount(0)
+				fpsAccumulator(0.0), fpsFrameCount(0),
+				win(nullptr), win_width(WIN_WIDTH), win_height(WIN_HEIGHT),
+				paused(false), score(0)
 {
 	this->player = new Player(WIN_WIDTH / 2, WIN_HEIGHT - 3, this, 100);
 

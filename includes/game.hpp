@@ -52,6 +52,9 @@ private:
 	bool bossWaveTriggered;
 	unsigned int spawnedEnemies;
 
+	// Key states per input simultaneo
+	bool keyLeft, keyRight, keyUp, keyDown, keyShooting;
+
 	// Sfondo a stelle
 	struct Star {
 		int x, y;

@@ -123,8 +123,7 @@ void Game::checkCollisions()
 			int bx = p_bullets[i].getX();
 			int by = p_bullets[i].getY();
 
-			// Nemico occupa: (ex-1, ey), (ex, ey), (ex+1, ey)
-			if (by == ey && (bx == ex - 1 || bx == ex || bx == ex + 1))
+			if (hitsEnemy(bx, by, ex, ey))
 			{
 				enemies[j].setHealth(enemies[j].getHealth() - p_bullets[i].damage);
 				if (enemies[j].getHealth() <= 0)
