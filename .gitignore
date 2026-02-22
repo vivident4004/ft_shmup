@@ -1,0 +1,42 @@
+# PDFs
+*.pdf
+
+# Compiled objects
+*.o
+*.obj
+*.out
+
+# Executables
+*.exe
+*.app
+*.bin
+
+# Libraries
+*.a
+*.so
+*.dylib
+*.lib
+*.dll
+
+# Build directories
+build/
+cmake-build-debug/
+cmake-build-release/
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# CMake
+CMakeCache.txt
+CMakeLists.txt.user
+cmake_install.cmake
+Makefile
+
+# Dependencies
+*.d

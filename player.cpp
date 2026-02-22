@@ -1,8 +1,12 @@
-#include "player.hpp"
-#include "bullet.hpp"
+#include "includes/player.hpp"
+#include "includes/bullet.hpp"
+#include "includes/game.hpp"
 
-// void Player::shoot()
-// {
-// 	Bullet bullet = Bullet(x, (y - 1), 1, 1, -1);
-// 	p_bullets.push_back(bullet);
-// }
+void Player::shoot()
+{
+	// Genera un proiettile e lo aggiunge al gioco tramite il puntatore a Game.
+	Bullet bullet = Bullet(x, (y - 1), 3, 1, -1);
+	if (game) {
+		game->addBullet(bullet);
+	}
+}
