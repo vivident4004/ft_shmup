@@ -5,13 +5,14 @@
 
 void Game::updateBackground()
 {
+	bgFrameCount++;
 	const char starChars[] = {'.', '+', '*', '`'};
 	for (auto &s : stars)
 	{
 		// Le stelle dim si muovono lentamente, le bright più veloci
-		if (s.color == COLOR_STAR_BRIGHT && frameCount % 5 == 0)
+		if (s.color == COLOR_STAR_BRIGHT && bgFrameCount % 5 == 0)
 			s.y++;
-		else if (s.color == COLOR_STAR_DIM && frameCount % 10 == 0)
+		else if (s.color == COLOR_STAR_DIM && bgFrameCount % 10 == 0)
 			s.y++;
 
 		if (s.y >= win_height - 1)
@@ -305,4 +306,45 @@ void Game::drawAsteroids()
 		mvwaddstr(win, a.getY(), a.getX(), "@");
 	}
 	wattroff(win, COLOR_PAIR(COLOR_ASTEROID) | A_BOLD);
+}
+
+void Game::drawMenu()
+{
+	const char *title = "FT_SHMUP";
+	const char *sub = "ASCII SPACE SHOOTER";
+	const char *start = "Press ENTER to Start";
+	const char *quit = "Press Q to Quit";
+
+	wattron(win, COLOR_PAIR(COLOR_GAMEOVER) | A_BOLD);
+	mvwaddstr(win, win_height / 2 - 4, (win_width - (int)strlen(title)) / 2, title);
+	wattroff(win, COLOR_PAIR(COLOR_GAMEOVER) | A_BOLD);
+
+	wattron(win, COLOR_PAIR(COLOR_STAR_BRIGHT));
+	mvwaddstr(win, win_height / 2 - 2, (win_width - (int)strlen(sub)) / 2, sub);
+	wattroff(win, COLOR_PAIR(COLOR_STAR_BRIGHT));
+
+	wattron(win, COLOR_PAIR(COLOR_HUD) | A_BOLD);
+	mvwaddstr(win, win_height / 2 + 1, (win_width - (int)strlen(start)) / 2, start);
+	wattroff(win, COLOR_PAIR(COLOR_HUD) | A_BOLD);
+
+	wattron(win, COLOR_PAIR(COLOR_HP_LOW));
+	mvwaddstr(win, win_height / 2 + 3, (win_width - (int)strlen(quit)) / 2, quit);
+	wattroff(win, COLOR_PAIR(COLOR_HP_LOW));
+}
+
+void Game::renderMenu()
+{
+	if (!initWindow())
+		return;
+
+	werase(win);
+
+	wattron(win, COLOR_PAIR(COLOR_HUD));
+	box(win, 0, 0);
+	wattroff(win, COLOR_PAIR(COLOR_HUD));
+
+	drawBackground();
+	drawMenu();
+
+	wrefresh(win);
 }

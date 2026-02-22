@@ -24,27 +24,28 @@ void Player::loseLife(int damage)
 
 void Player::die()
 {
-	isDead = true;
-	health = 0;
+	if (lives > 0)
+	{
+		// Ha ancora vite: respawn immediato
+		lives--;
+		health = maxHealth;
+		x = WIN_WIDTH / 2;
+		y = WIN_HEIGHT - 3;
+	}
+	else
+	{
+		// Niente vite: game over
+		isDead = true;
+		health = 0;
+	}
 }
 
 void Player::revive()
 {
-	if (lives > 0)
-	{
-		isDead = false;
-		health = maxHealth;
-		x = WIN_WIDTH / 2;   // Centro
-		y = WIN_HEIGHT - 3;   // Basso
-		lives--;
-	}
-	else
-	{
-		// Game over, reset completo
-		isDead = false;
-		health = maxHealth;
-		x = WIN_WIDTH / 2;   // Centro
-		y = WIN_HEIGHT - 3;   // Basso
-		lives = 3; // Reset delle vite
-	}
+	// Reset completo dopo game over
+	isDead = false;
+	health = maxHealth;
+	x = WIN_WIDTH / 2;
+	y = WIN_HEIGHT - 3;
+	lives = 3;
 }

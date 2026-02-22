@@ -53,6 +53,8 @@ int main()
 	const double frameDurationSec = 1.0 / FPS; // ~0.01667s per 60 FPS
 	auto lastTime = Clock::now();
 
+	bool inMenu = true;
+
 	while (c != 'q' && c != 'Q')
 	{
 		// Delta time: tempo reale trascorso dall'ultimo frame
@@ -60,21 +62,31 @@ int main()
 		double deltaTime = Duration(now - lastTime).count();
 		lastTime = now;
 
-		// Clock-based: accumula tempo di gioco
-		game.elapsedTime += deltaTime;
-
-		// Clock-based: calcola FPS reali
-		game.fpsAccumulator += deltaTime;
-		game.fpsFrameCount++;
-		if (game.fpsAccumulator >= 1.0) {
-			game.currentFPS = game.fpsFrameCount / game.fpsAccumulator;
-			game.fpsFrameCount = 0;
-			game.fpsAccumulator = 0.0;
-		}
-
 		// Input
 		while ((c = getch()) != ERR && c != 'q' && c != 'Q')
-			game.handleInput(c);
+		{
+			if (inMenu)
+			{
+				if (c == '\n' || c == KEY_ENTER)
+					inMenu = false;
+			}
+			else
+				game.handleInput(c);
+		}
+		if (c == 'q' || c == 'Q')
+			break;
+
+		if (inMenu)
+		{
+			game.updateBackground();
+			game.renderMenu();
+
+			auto frameEnd = Clock::now();
+			double sleepSec = frameDurationSec - Duration(frameEnd - now).count();
+			if (sleepSec > 0.0)
+				usleep((useconds_t)(sleepSec * 1000000));
+			continue;
+		}
 
 		// Pausa: aspetta che il giocatore riprenda
 		if (game.paused) {
@@ -96,7 +108,7 @@ int main()
 		}
 
 		// Frame-based: 1 update + 1 render per frame
-		game.update();
+		game.update(deltaTime);
 		game.render();
 
 		// Throttling: dormi il tempo restante del frame

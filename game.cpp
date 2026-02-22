@@ -2,13 +2,12 @@
 #include "includes/utilities.hpp"
 
 Game::Game() : player(nullptr),
-			   keyLeft(false), keyRight(false), keyUp(false),
-			   keyDown(false), keyShooting(false),
+			   bgFrameCount(0),
 			   frameCount(0), lastSpawnFrame(0), lastEnemyMoveFrame(0),
-			   win(nullptr), win_width(WIN_WIDTH), win_height(WIN_HEIGHT),
-			   paused(false), score(0),
 			   currentFPS(0.0), elapsedTime(0.0),
-			   fpsAccumulator(0.0), fpsFrameCount(0)
+			   fpsAccumulator(0.0), fpsFrameCount(0),
+			   win(nullptr), win_width(WIN_WIDTH), win_height(WIN_HEIGHT),
+			   paused(false), score(0)
 {
 	this->player = new Player(WIN_WIDTH / 2, WIN_HEIGHT - 3, this, 100);
 
@@ -66,11 +65,11 @@ void Game::handleInput(int c)
 		if (c == 'r' || c == 'R')
 		{
 			player->revive();
+			score = 0;
 			frameCount = 0;
 			lastSpawnFrame = 0;
 			lastEnemyMoveFrame = 0;
-			fpsAccumulator = 0.0;
-			fpsFrameCount = 0;
+			elapsedTime = 0.0;
 			enemies.clear();
 			p_bullets.clear();
 			e_bullets.clear();
@@ -107,9 +106,19 @@ void Game::handleInput(int c)
 	}
 }
 
-void Game::update()
+void Game::update(double deltaTime)
 {
 	frameCount++;
+
+	// Clock-based: accumula tempo di gioco e calcola FPS
+	elapsedTime += deltaTime;
+	fpsAccumulator += deltaTime;
+	fpsFrameCount++;
+	if (fpsAccumulator >= 1.0) {
+		currentFPS = fpsFrameCount / fpsAccumulator;
+		fpsFrameCount = 0;
+		fpsAccumulator = 0.0;
+	}
 
 	// Aggiorna sfondo stellare
 	updateBackground();

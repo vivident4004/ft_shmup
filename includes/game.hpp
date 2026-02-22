@@ -56,13 +56,7 @@ private:
 		int color;
 	};
 	std::vector<Star> stars;
-
-	// Stato dei tasti
-	bool keyLeft;
-	bool keyRight;
-	bool keyUp;
-	bool keyDown;
-	bool keyShooting;
+	unsigned long long bgFrameCount;
 
 	// Frame-based timing
 	unsigned long long frameCount;
@@ -85,10 +79,13 @@ private:
 	void drawLives();
 	void drawPause();
 	void drawExplosion();
-	void drawBackground();
 	void drawGameOver();
-	void updateBackground();
-	bool initWindow();
+
+	// Clock-based timing
+	double currentFPS;
+	double elapsedTime;
+	double fpsAccumulator;
+	int fpsFrameCount;
 
 public:
 	WINDOW *win;
@@ -97,17 +94,18 @@ public:
 	bool paused;
 	int score;
 
-	// Clock-based timing
-	double currentFPS;
-	double elapsedTime;
-	double fpsAccumulator;
-	int fpsFrameCount;
+	// Usati anche dal menu in main
+	void drawBackground();
+	void drawMenu();
+	void updateBackground();
+	bool initWindow();
+	void renderMenu();
 
 	Game();
 	~Game();
 
 	void handleInput(int c);
-	void update();
+	void update(double deltaTime);
 	void render();
 
 	void addBullet(const Bullet& bullet, int entity);

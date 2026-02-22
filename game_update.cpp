@@ -90,20 +90,29 @@ void Game::updateEnemies()
 }
 
 
+// Controlla se un punto (bx,by) tocca il giocatore (forma A + /|\)
+static bool hitsPlayer(int bx, int by, int px, int py)
+{
+	return (by == py && bx == px) ||
+		   (by == py + 1 && bx >= px - 1 && bx <= px + 1);
+}
+
+// Controlla se un punto (bx,by) tocca un nemico (forma (O), largo 3)
+static bool hitsEnemy(int bx, int by, int ex, int ey)
+{
+	return (by == ey && bx >= ex - 1 && bx <= ex + 1);
+}
+
 void Game::checkCollisions()
 {
+	// Proiettili giocatore vs nemici
 	for (size_t i = 0; i < p_bullets.size();)
 	{
-		bool hit = false;
+		bool consumed = false;
 		for (size_t j = 0; j < enemies.size(); j++)
 		{
-			int ex = enemies[j].getX();
-			int ey = enemies[j].getY();
-			int bx = p_bullets[i].getX();
-			int by = p_bullets[i].getY();
-
-			// Nemico occupa: (ex-1, ey), (ex, ey), (ex+1, ey)
-			if (by == ey && (bx == ex - 1 || bx == ex || bx == ex + 1))
+			if (hitsEnemy(p_bullets[i].getX(), p_bullets[i].getY(),
+						  enemies[j].getX(), enemies[j].getY()))
 			{
 				enemies[j].setHealth(enemies[j].getHealth() - p_bullets[i].damage);
 				if (enemies[j].getHealth() <= 0)
@@ -111,27 +120,24 @@ void Game::checkCollisions()
 					enemies.erase(enemies.begin() + j);
 					score += 10;
 				}
-				hit = true;
+				consumed = true;
 				break;
 			}
 		}
-		if (hit)
+		if (consumed)
 			p_bullets.erase(p_bullets.begin() + i);
 		else
 			i++;
 	}
 
+	// Proiettili giocatore vs asteroidi
 	for (size_t i = 0; i < p_bullets.size();)
 	{
-		bool hit = false;
+		bool consumed = false;
 		for (size_t j = 0; j < asteroids.size(); j++)
 		{
-			int ax = asteroids[j].getX();
-			int ay = asteroids[j].getY();
-			int bx = p_bullets[i].getX();
-			int by = p_bullets[i].getY();
-
-			if (by == ay && bx == ax)
+			if (p_bullets[i].getX() == asteroids[j].getX() &&
+				p_bullets[i].getY() == asteroids[j].getY())
 			{
 				asteroids[j].setHealth(asteroids[j].getHealth() - p_bullets[i].damage);
 				if (asteroids[j].getHealth() <= 0)
@@ -139,68 +145,64 @@ void Game::checkCollisions()
 					asteroids.erase(asteroids.begin() + j);
 					score += 5;
 				}
-				hit = true;
+				consumed = true;
 				break;
 			}
 		}
-		if (hit)
+		if (consumed)
 			p_bullets.erase(p_bullets.begin() + i);
 		else
 			i++;
 	}
 
+	// Proiettili nemici vs giocatore
+	int px = player->getX();
+	int py = player->getY();
+
 	for (size_t i = 0; i < e_bullets.size();)
 	{
-		int bx = e_bullets[i].getX();
-		int by = e_bullets[i].getY();
-		int px = player->getX();
-		int py = player->getY();
-
-		if ((by == py && bx == px) || (by == py + 1 && bx >= px - 1 && bx <= px + 1))
+		if (hitsPlayer(e_bullets[i].getX(), e_bullets[i].getY(), px, py))
 		{
 			player->loseLife(10);
 			e_bullets.erase(e_bullets.begin() + i);
+			px = player->getX();
+			py = player->getY();
 		}
 		else
-		{
 			i++;
-		}
 	}
 
+	// Asteroidi vs giocatore
 	for (size_t i = 0; i < asteroids.size();)
 	{
-		int ax = asteroids[i].getX();
-		int ay = asteroids[i].getY();
-		int px = player->getX();
-		int py = player->getY();
-
-		if ((ay == py && ax == px) || (ay == py + 1 && ax >= px - 1 && ax <= px + 1))
+		if (hitsPlayer(asteroids[i].getX(), asteroids[i].getY(), px, py))
 		{
 			player->die();
 			asteroids.erase(asteroids.begin() + i);
+			px = player->getX();
+			py = player->getY();
 		}
 		else
-		{
 			i++;
-		}
 	}
 
+	// Nemici vs giocatore (nemico largo 3: ex-1..ex+1)
 	for (size_t i = 0; i < enemies.size();)
 	{
 		int ex = enemies[i].getX();
 		int ey = enemies[i].getY();
-		int px = player->getX();
-		int py = player->getY();
 
-		if ((ey == py && (ex == px - 1 || ex == px || ex == px + 1)) ||
-			(ey == py + 1 && ex >= px - 1 && ex <= px + 1))
+		bool collision = hitsPlayer(ex - 1, ey, px, py) ||
+						 hitsPlayer(ex, ey, px, py) ||
+						 hitsPlayer(ex + 1, ey, px, py);
+		if (collision)
 		{
 			player->die();
 			enemies.erase(enemies.begin() + i);
+			px = player->getX();
+			py = player->getY();
 		}
 		else
-		{
 			i++;
-		}
 	}
 }
