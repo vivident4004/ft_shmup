@@ -1,15 +1,13 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
-#include <unistd.h>
 #include <ncurses.h>
 #include <vector>
+#include <chrono>
 #include "player.hpp"
 #include "bullet.hpp"
 #include "enemy.hpp"
 #include "asteroid.hpp"
-#include <ctime>
-#include <chrono>
 
 // Dimensioni della finestra di gioco
 #define WIN_WIDTH 60
@@ -17,68 +15,98 @@
 #define FPS 60
 
 // Frame-based timing (a 60 FPS: 60 frame = 1 secondo)
-#define SPAWN_INTERVAL_FRAMES 120   // Spawn ogni 2 secondi
-#define ENEMY_MOVE_INTERVAL_FRAMES 30 // Nemici si muovono ~20 volte/s
+#define SPAWN_INTERVAL_FRAMES 120
+#define ENEMY_MOVE_INTERVAL_FRAMES 30
 
 #define PLAYER 0
-// #define PLAYER_SHOOT_SPEED 4
 #define ENEMY 1
-// #define ENEMY_SHOOT_SPEED 20
+
+// Color pairs
+#define COLOR_PLAYER 1
+#define COLOR_PLAYER_BULLET 2
+#define COLOR_ENEMY 3
+#define COLOR_ENEMY_BULLET 4
+#define COLOR_ASTEROID 5
+#define COLOR_HUD 6
+#define COLOR_HP_FULL 7
+#define COLOR_HP_LOW 8
+#define COLOR_STAR_DIM 9
+#define COLOR_STAR_BRIGHT 10
+#define COLOR_EXPLOSION 11
+#define COLOR_GAMEOVER 12
+
+#define MAX_STARS 40
 
 class Game
 {
-public:
-	WINDOW *win;
-	int win_width;
-	int win_height;
-	bool paused;
-
+private:
+	// Entita'
 	Player *player;
-	std::vector<Bullet> p_bullets; // Proiettili del giocatore
-	std::vector<Bullet> e_bullets; // Proiettili dei nemici
+	std::vector<Bullet> p_bullets;
+	std::vector<Bullet> e_bullets;
 	std::vector<Enemy> enemies;
 	std::vector<Asteroid> asteroids;
 
-	// Stato dei tasti (permette input "simultanei")
+	// Sfondo - stelle
+	struct Star {
+		int x, y;
+		char ch;
+		int color;
+	};
+	std::vector<Star> stars;
+
+	// Stato dei tasti
 	bool keyLeft;
 	bool keyRight;
 	bool keyUp;
 	bool keyDown;
 	bool keyShooting;
 
-	int score;
-	double currentFPS;
-	double elapsedTime;     // Clock-based: tempo di gioco in secondi
-	double fpsAccumulator;  // Clock-based: accumula delta per calcolo FPS
-	int fpsFrameCount;      // Clock-based: frame contati nell'ultimo secondo
-
+	// Frame-based timing
 	unsigned long long frameCount;
 	unsigned long long lastSpawnFrame;
 	unsigned long long lastEnemyMoveFrame;
 
-	Game();
-	~Game();
-
-	// Gestione del ciclo di gioco
-	void handleInput(int c);
-	void update();
-	void render();
-
-	// Metodi di supporto
-	void addBullet(const Bullet& bullet, int entity);
-	void addAsteroid(const Asteroid& asteroid);
-	void spawnEnemy();
+	// Metodi interni - update
 	void updateEnemies();
 	void updateBullets();
 	void updateAsteroids();
+	void checkCollisions();
+
+	// Metodi interni - draw
 	void drawPlayer();
 	void drawBullets();
 	void drawEnemies();
 	void drawAsteroids();
 	void drawHUD();
-	void checkCollisions();
 	void drawHealthBar();
 	void drawExplosion();
+	void drawBackground();
+	void updateBackground();
+
+public:
+	WINDOW *win;
+	int win_width;
+	int win_height;
+	bool paused;
+	int score;
+
+	// Clock-based timing
+	double currentFPS;
+	double elapsedTime;
+	double fpsAccumulator;
+	int fpsFrameCount;
+
+	Game();
+	~Game();
+
+	void handleInput(int c);
+	void update();
+	void render();
+
+	void addBullet(const Bullet& bullet, int entity);
+	void addAsteroid(const Asteroid& asteroid);
+	void spawnEnemy();
 };
 
 #endif

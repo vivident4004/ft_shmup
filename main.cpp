@@ -9,6 +9,24 @@ static void start_ncurses(void)
     keypad(stdscr, TRUE);
 	nodelay(stdscr, TRUE);
     curs_set(0);
+
+	// Inizializza colori
+	if (has_colors()) {
+		start_color();
+		use_default_colors();
+		init_pair(COLOR_PLAYER, COLOR_CYAN, -1);
+		init_pair(COLOR_PLAYER_BULLET, COLOR_YELLOW, -1);
+		init_pair(COLOR_ENEMY, COLOR_RED, -1);
+		init_pair(COLOR_ENEMY_BULLET, COLOR_MAGENTA, -1);
+		init_pair(COLOR_ASTEROID, COLOR_WHITE, -1);
+		init_pair(COLOR_HUD, COLOR_GREEN, -1);
+		init_pair(COLOR_HP_FULL, COLOR_GREEN, -1);
+		init_pair(COLOR_HP_LOW, COLOR_RED, -1);
+		init_pair(COLOR_STAR_DIM, COLOR_BLUE, -1);
+		init_pair(COLOR_STAR_BRIGHT, COLOR_WHITE, -1);
+		init_pair(COLOR_EXPLOSION, COLOR_YELLOW, -1);
+		init_pair(COLOR_GAMEOVER, COLOR_RED, -1);
+	}
 }
 
 int main()
