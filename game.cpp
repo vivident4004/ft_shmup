@@ -5,7 +5,7 @@
 Game::Game() : win(nullptr), score(0) {
 	this->win_width = WIN_WIDTH;
 	this->win_height = WIN_HEIGHT;
-	this->player = new Player(WIN_WIDTH / 2, WIN_HEIGHT - 3, this);
+	this->player = new Player(WIN_WIDTH / 2, WIN_HEIGHT - 3, this, 100);
 	this->paused = false;
 	lastSpawnClock = clock();
 	spawnIntervalTicks = CLOCKS_PER_SEC * 1;
@@ -173,6 +173,22 @@ void Game::updateAsteroids() {
 	}
 }
 
+void Game::drawHealthBar() {
+    int barWidth = 30;
+    int playerHealth = player->getHealth();
+    int maxPlayerHealth = 100;
+    int filledWidth = (playerHealth * barWidth) / maxPlayerHealth;
+    
+    mvwaddstr(win, WIN_HEIGHT - 1, 2, "HP[");
+    
+    for (int i = 0; i < filledWidth; i++) {
+        mvwaddch(win, WIN_HEIGHT - 1, 5 + i, '='); 
+    }
+    
+    mvwaddstr(win, WIN_HEIGHT - 1, 5 + barWidth, "]");
+    mvwprintw(win, WIN_HEIGHT - 1, 5 + barWidth + 3, "%d/%d", playerHealth, maxPlayerHealth);
+}
+
 void Game::drawHUD() {
     // ✔ Stampa sulla finestra win, non su stdscr
     mvwprintw(win, 0, 2, "Score: %d", score);
@@ -180,6 +196,7 @@ void Game::drawHUD() {
     int elapsed = (clock() - gameStartClock) / CLOCKS_PER_SEC;
     mvwprintw(win, 0, win_width - 15, "Time: %d", elapsed);
 
+	drawHealthBar();
 }
 
 void Game::render() {
@@ -303,7 +320,7 @@ void Game::checkCollisions() {
 		if ((by == py && bx == px) || (by == py + 1 && bx >= px - 1 && bx <= px + 1))
 		{
 			// Il giocatore è colpito
-			player->loseLife();
+			player->setHealth(player->getHealth() - 1);
 			e_bullets.erase(e_bullets.begin() + i);
 		}
 		else

@@ -59,12 +59,10 @@ public:
 	void drawPlayer();
 	void drawBullets();
 	void drawEnemies();
-<<<<<<< HEAD
 	void drawAsteroids();
-=======
 	void drawHUD();
->>>>>>> refs/remotes/origin/master
 	void checkCollisions();
+	void drawHealthBar();
 };
 
 #endif
