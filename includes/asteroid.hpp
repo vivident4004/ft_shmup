@@ -9,9 +9,7 @@ public:
     Asteroid(int x, int y, int health = 5) : Entity(x, y, health) {}
     ~Asteroid() {}
 
-    void shoot() override {
-        // Gli asteroidi di solito non sparano
-    }
+    void shoot() override {}
 };
 
 #endif

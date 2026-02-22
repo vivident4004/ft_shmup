@@ -27,6 +27,15 @@ void Game::addBullet(const Bullet& bullet, int entity) {
 		e_bullets.push_back(bullet);
 }
 
+void Game::addAsteroid(const Asteroid& asteroid) {
+	asteroids.push_back(asteroid);
+}
+
+void Game::spawnEnemy() {
+	int x = RandomBetweenInt(1, win_width - 2);
+	enemies.emplace_back(x, 1, this, 1);
+}
+
 void Game::handleInput(int c) {
 	switch(c) {
 		case KEY_LEFT:
@@ -54,6 +63,7 @@ void Game::update() {
 	clock_t now = clock();
 	if (now - lastSpawnClock >= spawnIntervalTicks) {
 		spawnEnemy();
+		addAsteroid(Asteroid(RandomBetweenInt(1, win_width - 2), 1));
 		lastSpawnClock = now;
 	}
 
@@ -63,9 +73,11 @@ void Game::update() {
 	// muove i nemici solo quando scade il timer
 	if (now - lastEnemyMoveClock >= enemyMoveIntervalTicks) {
 		updateEnemies();
+		updateAsteroids();
 		lastEnemyMoveClock = now;
 	}
 
+	
 	// TODO: collisioni (proiettili vs nemici, proiettili vs giocatore)
 	// TODO: aggiungere e rimuovere proiettili nemici
 	// TODO: asteroidi che scorrono
@@ -117,11 +129,6 @@ void Game::updateBullets() {
 	}
 }
 
-void Game::spawnEnemy() {
-	int x = RandomBetweenInt(1, win_width - 2);
-	enemies.emplace_back(x, 1, this, 1);
-}
-
 void Game::updateEnemies()
 {
     for (size_t i = 0; i < enemies.size(); )
@@ -129,7 +136,7 @@ void Game::updateEnemies()
         Enemy &e = enemies[i];
         int newX = e.getX() + RandomBetweenInt(-3, 3);
         
-        // ✔ Mantieni i nemici dentro lo schermo
+        // Mantieni i nemici dentro lo schermo
         if (newX < 2) newX = 2;
         if (newX > win_width - 3) newX = win_width - 3;
         
@@ -147,6 +154,22 @@ void Game::updateEnemies()
             i++;
         }
     }
+}
+
+void Game::updateAsteroids() {
+	for (size_t i = 0; i < asteroids.size(); )
+	{
+		Asteroid &a = asteroids[i];
+		a.setY(a.getY() + 1);
+		if (a.getY() >= win_height - 1)
+		{
+			asteroids.erase(asteroids.begin() + i);
+		}
+		else
+		{
+			i++;
+		}
+	}
 }
 
 void Game::render() {
@@ -197,6 +220,7 @@ void Game::render() {
 	drawPlayer();
 	drawBullets();
 	drawEnemies();
+	drawAsteroids();
 
 	wrefresh(win);
 }
@@ -220,6 +244,12 @@ void Game::drawEnemies() {
 		mvwaddch(win, e.getY(), e.getX() - 1, '(');
 		mvwaddch(win, e.getY(), e.getX(), 'O');
 		mvwaddch(win, e.getY(), e.getX() + 1, ')');
+	}
+}
+
+void Game::drawAsteroids() {
+	for (const auto& a : asteroids) {
+		mvwaddstr(win, a.getY(), a.getX(), "@");
 	}
 }
 

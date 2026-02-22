@@ -7,6 +7,7 @@
 #include "player.hpp"
 #include "bullet.hpp"
 #include "enemy.hpp"
+#include "asteroid.hpp"
 #include <ctime>
 
 // Dimensioni della finestra di gioco
@@ -30,6 +31,7 @@ public:
 	std::vector<Bullet> p_bullets; // Proiettili del giocatore
 	std::vector<Bullet> e_bullets; // Proiettili dei nemici
 	std::vector<Enemy> enemies;
+	std::vector<Asteroid> asteroids;
 
 	int score;
 
@@ -37,7 +39,6 @@ public:
 	clock_t spawnIntervalTicks;
 	clock_t lastEnemyMoveClock;
 	clock_t enemyMoveIntervalTicks;
-
 
 	Game();
 	~Game();
@@ -49,12 +50,15 @@ public:
 
 	// Metodi di supporto
 	void addBullet(const Bullet& bullet, int entity);
+	void addAsteroid(const Asteroid& asteroid);
 	void spawnEnemy();
-	void updateBullets();
 	void updateEnemies();
+	void updateBullets();
+	void updateAsteroids();
 	void drawPlayer();
 	void drawBullets();
 	void drawEnemies();
+	void drawAsteroids();
 	void checkCollisions();
 };
 
