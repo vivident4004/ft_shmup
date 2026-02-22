@@ -135,30 +135,35 @@ void Game::updateEnemies()
 }
 
 void Game::render() {
-    // Aggiorna dimensione del terminale ad ogni render
-    int new_h, new_w;
-    getmaxyx(stdscr, new_h, new_w);
-    win_height = new_h;
-    win_width = new_w;
+    // Legge dimensione del terminale ad ogni render
+    int term_h, term_w;
+    getmaxyx(stdscr, term_h, term_w);
 
-    // Se il terminale è troppo piccolo, mostra il messaggio di pausa e ritorna
-    if (win_width < WIN_WIDTH || win_height < WIN_HEIGHT)
+    // Se il terminale è troppo piccolo rispetto ai requisiti minimi, mostra pausa e ritorna
+    if (term_w < WIN_WIDTH || term_h < WIN_HEIGHT)
     {
         if (win) {
             delwin(win);
             win = nullptr;
         }
         clear();
-        int col = (win_width - 40) / 2;
+        int col = (term_w - 40) / 2;
         if (col < 0) col = 0;
-        mvprintw(win_height / 2, col, "Terminale troppo piccolo!");
-        mvprintw(win_height / 2 + 1, col, "Richiesto almeno %dx%d", WIN_WIDTH, WIN_HEIGHT);
-        mvprintw(win_height / 2 + 2, col, "Ridimensiona per continuare...");
+        mvprintw(term_h / 2, col, "Terminale troppo piccolo!");
+        mvprintw(term_h / 2 + 1, col, "Richiesto almeno %dx%d", WIN_WIDTH, WIN_HEIGHT);
+        mvprintw(term_h / 2 + 2, col, "Ridimensiona per continuare...");
         refresh();
         return;
     }
 
-    // Assicurati che la WINDOW esista e corrisponda alle nuove dimensioni
+    // Limita la dimensione di gioco al massimo definito in includes/game.hpp
+    int new_h = (term_h > WIN_HEIGHT) ? WIN_HEIGHT : term_h;
+    int new_w = (term_w > WIN_WIDTH) ? WIN_WIDTH : term_w;
+
+    win_height = new_h;
+    win_width = new_w;
+
+    // Assicurati che la WINDOW esista e corrisponda alle dimensioni desiderate
     if (!win) {
         win = newwin(win_height, win_width, 0, 0);
     } else {
