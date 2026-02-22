@@ -17,6 +17,7 @@
 // Frame-based timing (a 60 FPS: 60 frame = 1 secondo)
 #define SPAWN_INTERVAL_FRAMES 120
 #define ENEMY_MOVE_INTERVAL_FRAMES 30
+#define MAX_ENEMIES 1
 
 #define PLAYER 0
 #define ENEMY 1
@@ -48,6 +49,8 @@ private:
 	std::vector<Bullet> e_bullets;
 	std::vector<Enemy> enemies;
 	std::vector<Asteroid> asteroids;
+	bool bossWaveTriggered;
+	unsigned int spawnedEnemies;
 
 	// Sfondo a stelle
 	struct Star {
@@ -73,6 +76,7 @@ private:
 	void drawPlayer();
 	void drawBullets();
 	void drawEnemies();
+	void drawBoss();
 	void drawAsteroids();
 	void drawHUD();
 	void drawHealthBar();

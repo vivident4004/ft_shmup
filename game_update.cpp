@@ -73,9 +73,16 @@ void Game::updateEnemies()
 		if (newX > win_width - 3)
 			newX = win_width - 3;
 
-		e.setX(newX);
-		e.setY(e.getY() + 1);
+		if (e.getIsBoss())
+			newX = e.getX(); // Il boss non si muove lateralmente
 
+
+
+		e.setX(newX);
+
+		if (!e.getIsBoss())
+			e.setY(e.getY() + 1);
+		
 		e.update();
 
 		if (e.getY() >= win_height - 1)
@@ -111,8 +118,13 @@ void Game::checkCollisions()
 		bool consumed = false;
 		for (size_t j = 0; j < enemies.size(); j++)
 		{
-			if (hitsEnemy(p_bullets[i].getX(), p_bullets[i].getY(),
-						  enemies[j].getX(), enemies[j].getY()))
+			int ex = enemies[j].getX();
+			int ey = enemies[j].getY();
+			int bx = p_bullets[i].getX();
+			int by = p_bullets[i].getY();
+
+			// Nemico occupa: (ex-1, ey), (ex, ey), (ex+1, ey)
+			if (by == ey && (bx == ex - 1 || bx == ex || bx == ex + 1))
 			{
 				enemies[j].setHealth(enemies[j].getHealth() - p_bullets[i].damage);
 				if (enemies[j].getHealth() <= 0)

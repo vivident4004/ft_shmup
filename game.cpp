@@ -2,12 +2,14 @@
 #include "includes/utilities.hpp"
 
 Game::Game() : player(nullptr),
-			   bgFrameCount(0),
-			   frameCount(0), lastSpawnFrame(0), lastEnemyMoveFrame(0),
-			   currentFPS(0.0), elapsedTime(0.0),
-			   fpsAccumulator(0.0), fpsFrameCount(0),
-			   win(nullptr), win_width(WIN_WIDTH), win_height(WIN_HEIGHT),
-			   paused(false), score(0)
+				bossWaveTriggered(false), spawnedEnemies(0),
+				keyLeft(false), keyRight(false), keyUp(false),
+				keyDown(false), keyShooting(false),
+				frameCount(0), lastSpawnFrame(0), lastEnemyMoveFrame(0),
+				win(nullptr), win_width(WIN_WIDTH), win_height(WIN_HEIGHT),
+				paused(false), score(0),
+				currentFPS(0.0), elapsedTime(0.0),
+				fpsAccumulator(0.0), fpsFrameCount(0)
 {
 	this->player = new Player(WIN_WIDTH / 2, WIN_HEIGHT - 3, this, 100);
 
@@ -50,6 +52,7 @@ void Game::spawnEnemy()
 {
 	int x = RandomBetweenInt(1, win_width - 2);
 	enemies.emplace_back(x, 1, this, 5, false);
+	spawnedEnemies++;
 }
 
 void Game::spawnBoss()
@@ -125,8 +128,15 @@ void Game::update(double deltaTime)
 
 	if (frameCount - lastSpawnFrame >= SPAWN_INTERVAL_FRAMES)
 	{
-		spawnEnemy();
-		addAsteroid(Asteroid(RandomBetweenInt(1, win_width - 2), 1, 1, false));
+
+		if (!bossWaveTriggered && spawnedEnemies < MAX_ENEMIES)
+			spawnEnemy();
+		else if (this->enemies.size() == 0)
+		{
+			spawnBoss();
+			bossWaveTriggered = true;
+		}
+		addAsteroid(Asteroid(RandomBetweenInt(1, win_width - 2), 1, 5, false));
 		lastSpawnFrame = frameCount;
 	}
 
