@@ -44,12 +44,12 @@ void Game::updateBullets()
 	}
 }
 
-void Game::updateAsteroids()
+void Game::updateAsteroids(double deltaTime)
 {
 	for (size_t i = 0; i < asteroids.size();)
 	{
 		Asteroid &a = asteroids[i];
-		a.setY(a.getY() + 1);
+		a.setYPos(a.getYPos() + a.getSpeed() * deltaTime);
 		if (a.getY() >= win_height - 1)
 		{
 			asteroids.erase(asteroids.begin() + i);
@@ -65,18 +65,33 @@ void Game::updateEnemies()
 	for (size_t i = 0; i < enemies.size();)
 	{
 		Enemy &e = enemies[i];
-		int newX = e.getX() + RandomBetweenInt(-3, 3);
+		int newX;
+		if (e.getIsBoss())
+		{
+			// Boss segue il giocatore lateralmente
+			int playerX = player->getX();
+			if (e.getX() < playerX)
+				newX = e.getX() + 2;
+			else if (e.getX() > playerX)
+				newX = e.getX() - 2;
+			else
+				newX = e.getX();
+			if (newX < 4)
+				newX = 4;
+			if (newX > win_width - 5)
+				newX = win_width - 5;
+		}
+		else
+		{
+			// Movimento casuale per nemici normali
+			newX = e.getX() + RandomBetweenInt(-3, 3);
+		}
 
 		// Mantieni i nemici dentro lo schermo
 		if (newX < 2)
 			newX = 2;
 		if (newX > win_width - 3)
 			newX = win_width - 3;
-
-		if (e.getIsBoss())
-			newX = e.getX(); // Il boss non si muove lateralmente
-
-
 
 		e.setX(newX);
 
@@ -104,10 +119,11 @@ static bool hitsPlayer(int bx, int by, int px, int py)
 		   (by == py + 1 && bx >= px - 1 && bx <= px + 1);
 }
 
-// Controlla se un punto (bx,by) tocca un nemico (forma (O), largo 3)
-static bool hitsEnemy(int bx, int by, int ex, int ey)
+// Controlla se un punto (bx,by) tocca un nemico (forma (O), largo 3 per normali, 9 per boss)
+static bool hitsEnemy(int bx, int by, int ex, int ey, bool isBoss)
 {
-	return (by == ey && bx >= ex - 1 && bx <= ex + 1);
+	int width = isBoss ? 4 : 1;
+	return (by == ey && bx >= ex - width && bx <= ex + width);
 }
 
 void Game::checkCollisions()
@@ -123,13 +139,17 @@ void Game::checkCollisions()
 			int bx = p_bullets[i].getX();
 			int by = p_bullets[i].getY();
 
-			if (hitsEnemy(bx, by, ex, ey))
+			if (hitsEnemy(bx, by, ex, ey, enemies[j].getIsBoss()))
 			{
 				enemies[j].setHealth(enemies[j].getHealth() - p_bullets[i].damage);
 				if (enemies[j].getHealth() <= 0)
 				{
+					if (enemies[j].getIsBoss()) {
+						score += 20;
+					} else {
+						score += 10;
+					}
 					enemies.erase(enemies.begin() + j);
-					score += 10;
 				}
 				consumed = true;
 				break;
@@ -197,15 +217,27 @@ void Game::checkCollisions()
 			i++;
 	}
 
-	// Nemici vs giocatore (nemico largo 3: ex-1..ex+1)
+	// Nemici vs giocatore
 	for (size_t i = 0; i < enemies.size();)
 	{
 		int ex = enemies[i].getX();
 		int ey = enemies[i].getY();
 
-		bool collision = hitsPlayer(ex - 1, ey, px, py) ||
-						 hitsPlayer(ex, ey, px, py) ||
-						 hitsPlayer(ex + 1, ey, px, py);
+		bool collision = false;
+		if (enemies[i].getIsBoss()) {
+			// Boss largo 9: ex-4..ex+4
+			for (int dx = -4; dx <= 4; dx++) {
+				if (hitsPlayer(ex + dx, ey, px, py)) {
+					collision = true;
+					break;
+				}
+			}
+		} else {
+			// Nemico normale largo 3: ex-1..ex+1
+			collision = hitsPlayer(ex - 1, ey, px, py) ||
+						hitsPlayer(ex, ey, px, py) ||
+						hitsPlayer(ex + 1, ey, px, py);
+		}
 		if (collision)
 		{
 			player->die();
@@ -215,5 +247,11 @@ void Game::checkCollisions()
 		}
 		else
 			i++;
+	}
+
+	// Reset wave dopo boss sconfitto
+	if (enemies.empty() && bossWaveTriggered) {
+		bossWaveTriggered = false;
+		spawnedEnemies = 0;
 	}
 }

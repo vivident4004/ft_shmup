@@ -275,7 +275,14 @@ void Game::drawBullets()
 	wattron(win, COLOR_PAIR(COLOR_ENEMY_BULLET) | A_BOLD);
 	for (const auto &b : e_bullets)
 	{
-		mvwaddch(win, b.getY(), b.getX(), '*');
+		if (bossWaveTriggered)
+		{
+			mvwaddch(win, b.getY(), b.getX(), '*');
+		}
+		else
+		{
+			mvwaddch(win, b.getY(), b.getX(), '!');
+		}
 	}
 	wattroff(win, COLOR_PAIR(COLOR_ENEMY_BULLET) | A_BOLD);
 }
@@ -313,9 +320,11 @@ void Game::drawBoss()
 			else
 				color = COLOR_ENEMY_FULL;
 			wattron(win, COLOR_PAIR(color) | A_BOLD);
-			mvwaddch(win, e.getY(), e.getX() - 1, '(');
-			mvwaddch(win, e.getY(), e.getX(), 'B');
-			mvwaddch(win, e.getY(), e.getX() + 1, ')');
+			// mvwaddch(win, e.getY(), e.getX() - 1, '(');
+			// mvwaddch(win, e.getY(), e.getX(), 'B');
+			// mvwaddch(win, e.getY(), e.getX() + 1, ')');
+			mvwaddstr(win, e.getY(), e.getX() - 4, "  $  $  ");
+			mvwaddstr(win, e.getY() + 1, e.getX() - 4, "~//<>\\\\~");
 			wattroff(win, COLOR_PAIR(color) | A_BOLD);
 		}
 	}
@@ -335,8 +344,18 @@ void Game::drawMenu()
 {
 	const char *title = "FT_SHMUP";
 	const char *sub = "ASCII SPACE SHOOTER";
-	const char *start = "Press ENTER to Start";
+	char normal_buf[50];
+	char easy_buf[50];
+	const char *select = "Press ENTER to select";
 	const char *quit = "Press Q to Quit";
+
+	if (menuSelection == 0) {
+		sprintf(normal_buf, "> Normal (with bosses)");
+		sprintf(easy_buf, "  Easy (no bosses)");
+	} else {
+		sprintf(normal_buf, "  Normal (with bosses)");
+		sprintf(easy_buf, "> Easy (no bosses)");
+	}
 
 	wattron(win, COLOR_PAIR(COLOR_GAMEOVER) | A_BOLD);
 	mvwaddstr(win, win_height / 2 - 4, (win_width - (int)strlen(title)) / 2, title);
@@ -347,11 +366,19 @@ void Game::drawMenu()
 	wattroff(win, COLOR_PAIR(COLOR_STAR_BRIGHT));
 
 	wattron(win, COLOR_PAIR(COLOR_HUD) | A_BOLD);
-	mvwaddstr(win, win_height / 2 + 1, (win_width - (int)strlen(start)) / 2, start);
+	mvwaddstr(win, win_height / 2, (win_width - (int)strlen(normal_buf)) / 2, normal_buf);
+	wattroff(win, COLOR_PAIR(COLOR_HUD) | A_BOLD);
+
+	wattron(win, COLOR_PAIR(COLOR_HUD) | A_BOLD);
+	mvwaddstr(win, win_height / 2 + 1, (win_width - (int)strlen(easy_buf)) / 2, easy_buf);
+	wattroff(win, COLOR_PAIR(COLOR_HUD) | A_BOLD);
+
+	wattron(win, COLOR_PAIR(COLOR_HUD) | A_BOLD);
+	mvwaddstr(win, win_height / 2 + 3, (win_width - (int)strlen(select)) / 2, select);
 	wattroff(win, COLOR_PAIR(COLOR_HUD) | A_BOLD);
 
 	wattron(win, COLOR_PAIR(COLOR_HP_LOW));
-	mvwaddstr(win, win_height / 2 + 3, (win_width - (int)strlen(quit)) / 2, quit);
+	mvwaddstr(win, win_height / 2 + 5, (win_width - (int)strlen(quit)) / 2, quit);
 	wattroff(win, COLOR_PAIR(COLOR_HP_LOW));
 }
 

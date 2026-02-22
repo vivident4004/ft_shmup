@@ -15,9 +15,9 @@
 #define FPS 60
 
 // Frame-based timing (a 60 FPS: 60 frame = 1 secondo)
-#define SPAWN_INTERVAL_FRAMES 120
-#define ENEMY_MOVE_INTERVAL_FRAMES 30
-#define MAX_ENEMIES 1
+#define SPAWN_INTERVAL_FRAMES 200
+#define ENEMY_MOVE_INTERVAL_FRAMES 60
+#define MAX_ENEMIES 10
 
 #define PLAYER 0
 #define ENEMY 1
@@ -52,6 +52,13 @@ private:
 	bool bossWaveTriggered;
 	unsigned int spawnedEnemies;
 
+	bool isEasyMode;
+	int menuSelection;
+	int currentWave;
+	int enemiesSpawnedInWave;
+	int enemiesInWave;
+	bool isBossWave;
+
 	// Key states per input simultaneo
 	bool keyLeft, keyRight, keyUp, keyDown, keyShooting;
 
@@ -72,7 +79,7 @@ private:
 	// Metodi interni - update
 	void updateEnemies();
 	void updateBullets();
-	void updateAsteroids();
+	void updateAsteroids(double deltaTime);
 	void checkCollisions();
 
 	// Metodi interni - draw
@@ -107,6 +114,10 @@ public:
 	void updateBackground();
 	bool initWindow();
 	void renderMenu();
+
+	void setDifficulty(int sel) { isEasyMode = (sel == 1); }
+	int getMenuSelection() { return menuSelection; }
+	void toggleMenuSelection() { menuSelection = 1 - menuSelection; }
 
 	Game();
 	~Game();

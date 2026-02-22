@@ -3,6 +3,8 @@
 
 Game::Game() : player(nullptr),
 				bossWaveTriggered(false), spawnedEnemies(0),
+				isEasyMode(false), menuSelection(0), currentWave(1),
+				enemiesSpawnedInWave(0), enemiesInWave(MAX_ENEMIES), isBossWave(false),
 				keyLeft(false), keyRight(false), keyUp(false),
 				keyDown(false), keyShooting(false),
 				bgFrameCount(0),
@@ -59,7 +61,7 @@ void Game::spawnEnemy()
 void Game::spawnBoss()
 {
 	int x = RandomBetweenInt(1, win_width - 2);
-	enemies.emplace_back(x, 1, this, 20, true); // Boss con più salute
+	enemies.emplace_back(x, 2, this, 20, true); // Boss con più salute
 }
 
 void Game::handleInput(int c)
@@ -78,6 +80,12 @@ void Game::handleInput(int c)
 			p_bullets.clear();
 			e_bullets.clear();
 			asteroids.clear();
+			bossWaveTriggered = false;
+			spawnedEnemies = 0;
+			currentWave = 1;
+			enemiesSpawnedInWave = 0;
+			enemiesInWave = 3;
+			isBossWave = false;
 		}
 		return;
 	}
@@ -127,28 +135,55 @@ void Game::update(double deltaTime)
 	// Aggiorna sfondo stellare
 	updateBackground();
 
-	if (frameCount - lastSpawnFrame >= SPAWN_INTERVAL_FRAMES)
+	if (frameCount - lastSpawnFrame >= (unsigned long long)RandomBetweenInt(60, SPAWN_INTERVAL_FRAMES))
 	{
 
-		if (!bossWaveTriggered && spawnedEnemies < MAX_ENEMIES)
+		if (enemiesSpawnedInWave < enemiesInWave)
+		{
 			spawnEnemy();
+			enemiesSpawnedInWave++;
+		}
 		else if (this->enemies.size() == 0)
 		{
-			spawnBoss();
-			bossWaveTriggered = true;
+			if (isBossWave)
+			{
+				// next wave
+				currentWave++;
+				enemiesInWave += 2;
+				enemiesSpawnedInWave = 0;
+				isBossWave = false;
+				bossWaveTriggered = false;
+			}
+			else
+			{
+				if (!isEasyMode)
+				{
+					spawnBoss();
+					isBossWave = true;
+					bossWaveTriggered = true;
+				}
+				else
+				{
+					// next wave without boss
+					currentWave++;
+					enemiesInWave += 2;
+					enemiesSpawnedInWave = 0;
+					bossWaveTriggered = false;
+				}
+			}
 		}
-		addAsteroid(Asteroid(RandomBetweenInt(1, win_width - 2), 1, 5, false));
+		addAsteroid(Asteroid(RandomBetweenInt(1, win_width - 2), 1, 5, false, 10.0f + (float)RandomBetweenInt(0, 20)));
 		lastSpawnFrame = frameCount;
 	}
 
 	// updateBullet() è chiamato ogni frame
 	updateBullets();
+	updateAsteroids(deltaTime);
 	checkCollisions();
 
 	if (frameCount - lastEnemyMoveFrame >= ENEMY_MOVE_INTERVAL_FRAMES)
 	{
 		updateEnemies();
-		updateAsteroids();
 		lastEnemyMoveFrame = frameCount;
 	}
 }

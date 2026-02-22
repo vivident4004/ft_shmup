@@ -68,7 +68,14 @@ int main()
 			if (inMenu)
 			{
 				if (c == '\n' || c == KEY_ENTER)
+				{
+					game.setDifficulty(game.getMenuSelection());
 					inMenu = false;
+				}
+				else if (c == KEY_UP || c == 'w' || c == 'W' || c == KEY_DOWN || c == 's' || c == 'S')
+				{
+					game.toggleMenuSelection();
+				}
 			}
 			else
 				game.handleInput(c);

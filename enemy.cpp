@@ -5,9 +5,9 @@
 
 Enemy::Enemy(int x, int y, Game *game, int health, bool isBoss)
     : Entity(x, y, health, isBoss), game(game) {
-    shootInterval = RandomBetweenInt(1, 3);  // Intervallo in secondi
+    shootInterval = RandomBetweenInt(3, 5);  // Intervallo in secondi
 	if (isBoss) {
-		shootInterval *= 3;
+		shootInterval = RandomBetweenInt(1, 2);  // Per boss, 1-3 secondi
 	}
     // Offset casuale per evitare spari sincronizzati
     double randomOffset = RandomBetweenInt(0, 100) * shootInterval / 100.0;
@@ -15,10 +15,23 @@ Enemy::Enemy(int x, int y, Game *game, int health, bool isBoss)
 }
 
 void Enemy::shoot() {
-	Bullet bullet = Bullet(x, (y - 1), RandomBetweenInt(5, 7), 1, 1);
-	if (game) {
-		game->addBullet(bullet, ENEMY);
-	}
+    if (isBoss) {
+        // Boss spara tre raggi da posizioni diverse con velocità diverse
+        for (int i = 0; i < 3; i++) {
+            int speed = 5 + i; // Velocità 5, 6, 7
+            int bulletX = x + (i - 1); // x-1, x, x+1
+            Bullet bullet = Bullet(bulletX, y, speed, 1, 1);
+            if (game) {
+                game->addBullet(bullet, ENEMY);
+            }
+        }
+    } else {
+        // Nemico normale spara un proiettile
+        Bullet bullet = Bullet(x, y, RandomBetweenInt(5, 7), 1, 1);
+        if (game) {
+            game->addBullet(bullet, ENEMY);
+        }
+    }
 }
 
 void Enemy::update() {
@@ -27,6 +40,10 @@ void Enemy::update() {
 	if (elapsed >= shootInterval) {
 		shoot();
 		lastShootTime = now;
-		shootInterval = RandomBetweenInt(1, 10);
+		if (isBoss) {
+			shootInterval = RandomBetweenInt(1, 2);
+		} else {
+			shootInterval = RandomBetweenInt(3, 5);
+		}
 	}
 }
