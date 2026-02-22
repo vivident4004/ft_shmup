@@ -1,5 +1,6 @@
 #include "includes/game.hpp"
 #include <chrono>
+#include <unistd.h>
 
 static void start_ncurses(void)
 {
@@ -96,12 +97,7 @@ int main()
 		double frameElapsed = Duration(frameEnd - now).count();
 		double sleepSec = frameDurationSec - frameElapsed;
 		if (sleepSec > 0.0) {
-			int sleepMs = (int)(sleepSec * 1000);
-			if (sleepMs > 0)
-				napms(sleepMs);
-			// Busy-wait per il resto sub-millisecondo
-			while (Duration(Clock::now() - now).count() < frameDurationSec)
-				;
+			usleep((useconds_t)(sleepSec * 1000000));
 		}
 	}
 
